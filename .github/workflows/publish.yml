@@ -212,6 +212,11 @@ jobs:
       with:
         lane: build
         options: '{ "flavor": "vhtapp_uganda" }'
+    - name: Assemble vhtapp_uganda_training
+      uses: maierj/fastlane-action@v1.4.0
+      with:
+        lane: build
+        options: '{ "flavor": "vhtapp_uganda_training" }'
     - name: Assemble itech_aurum
       uses: maierj/fastlane-action@v1.4.0
       with:
