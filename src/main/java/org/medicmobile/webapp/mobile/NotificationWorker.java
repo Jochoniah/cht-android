@@ -9,7 +9,12 @@ import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 
 import org.json.JSONException;
+import org.json.JSONObject;
 import org.medicmobile.webapp.mobile.util.AppDataStore;
+
+import java.time.LocalTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 
 public class NotificationWorker extends Worker {
 	public static final String NOTIFICATION_WORK_REQUEST_TAG = "cht_notification_tag";
@@ -27,13 +32,30 @@ public class NotificationWorker extends Worker {
 		AppDataStore appDataStore = AppDataStore.getInstance(context);
 		AppNotificationManager appNotificationManager = new AppNotificationManager(context);
 		try {
-			String result = appDataStore
+			String notificationWindowSettings = appDataStore
+				.getStringBlocking(AppNotificationManager.TASK_NOTIFICATION_WINDOW_KEY, "{}");
+			if (isNotificationWindow(notificationWindowSettings)) {
+				String result = appDataStore
 					.getStringBlocking(AppNotificationManager.TASK_NOTIFICATIONS_KEY, "[]");
-			appNotificationManager.showNotificationsFromJsArray(result);
+				appNotificationManager.showNotificationsFromJsArray(result);
+			}
 			return Result.success();
 		} catch (JSONException e) {
 			log(e, "error showing notifications");
 			return Result.failure();
 		}
+	}
+
+	private boolean isNotificationWindow(String windowObject) throws JSONException {
+		JSONObject data = Utils.parseJSONObject(windowObject);
+		LocalTime start  = formatTime(data.getString("start"));
+		LocalTime end = formatTime(data.getString("end"));
+		LocalTime now = LocalTime.now(ZoneId.systemDefault());
+		return now.isAfter(start) && now.isBefore(end);
+	}
+
+	private LocalTime formatTime(String timeString){
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
+		return LocalTime.parse(timeString, formatter);
 	}
 }

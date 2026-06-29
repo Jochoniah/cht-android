@@ -140,6 +140,15 @@ final class Utils {
 		}
 	}
 
+	static JSONObject parseJSONObject(String inputObject) {
+		try {
+			return new JSONObject(inputObject);
+		} catch (JSONException e) {
+			log(e, "error parsing object");
+			return new JSONObject();
+		}
+	}
+
 	static boolean checkIfDomainsAreVerified(Context context) {
 		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
 			return true;
