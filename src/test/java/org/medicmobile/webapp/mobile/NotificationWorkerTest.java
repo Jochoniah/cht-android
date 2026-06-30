@@ -170,9 +170,9 @@ public class NotificationWorkerTest {
 		}
 	}
 
-	// Apps with no/invalid window settings run all the time
+	// Apps with invalid window settings time don't run
 	@Test
-	public void isNotificationWindow_returnsTrue_whenBadTimeFields() throws Exception {
+	public void isNotificationWindow_returnsFalse_whenBadTimeFields() throws Exception {
 		String windowSettings = "{\"start\": \"09:70\",\"end\": \"19:05\"}"; // bad data
 
 		try (MockedStatic<AppDataStore> dataMock = mockStatic(AppDataStore.class)) {
@@ -183,7 +183,7 @@ public class NotificationWorkerTest {
 			NotificationWorker worker = createWorker();
 
 			boolean result = worker.isNotificationWindow(windowSettings);
-			assertTrue(result);
+			assertFalse(result);
 		}
 	}
 

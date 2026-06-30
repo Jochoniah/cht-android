@@ -32,10 +32,10 @@ public class NotificationWorker extends Worker {
 		AppNotificationManager appNotificationManager = new AppNotificationManager(context);
 		try {
 			String notificationWindowSettings = appDataStore
-				.getStringBlocking(AppNotificationManager.TASK_NOTIFICATION_WINDOW_KEY, "{}");
+					.getStringBlocking(AppNotificationManager.TASK_NOTIFICATION_WINDOW_KEY, "{}");
 			if (isNotificationWindow(notificationWindowSettings)) {
 				String notifications = appDataStore
-					.getStringBlocking(AppNotificationManager.TASK_NOTIFICATIONS_KEY, "[]");
+						.getStringBlocking(AppNotificationManager.TASK_NOTIFICATIONS_KEY, "[]");
 				appNotificationManager.showNotificationsFromJsArray(notifications);
 			}
 			return Result.success();
@@ -53,7 +53,7 @@ public class NotificationWorker extends Worker {
 		LocalTime start = Utils.formatTime(data.getString("start"));
 		LocalTime end = Utils.formatTime(data.getString("end"));
 		if (start == null || end == null) {
-			return true;
+			return false;
 		}
 		LocalTime now = LocalTime.now(ZoneId.systemDefault());
 		return now.isAfter(start) && now.isBefore(end);
