@@ -2,7 +2,6 @@ package org.medicmobile.webapp.mobile;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.mock;
@@ -31,7 +30,6 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.RobolectricTestRunner;
 
-import java.lang.reflect.Method;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -54,20 +52,19 @@ public class NotificationWorkerTest {
 
 	@Test
 	public void doWork_returnsSuccess_whenNoException() throws JSONException {
-		String notificationWindowSettings = "{}";  // Empty = always in window
+		String notificationWindowSettings = "{}"; // Empty = always in window
 		String notifications = "[]";
 
 		try (MockedStatic<AppDataStore> dataMock = mockStatic(AppDataStore.class);
-		     MockedConstruction<AppNotificationManager> notificationMgrMock
-				 = mockConstruction(AppNotificationManager.class)) {
-
+				MockedConstruction<AppNotificationManager> notificationMgrMock = mockConstruction(
+						AppNotificationManager.class)) {
 			dataMock.when(() -> AppDataStore.getInstance(context))
-				.thenReturn(mockAppDataStore);
+					.thenReturn(mockAppDataStore);
 
 			when(mockAppDataStore.getStringBlocking(AppNotificationManager.TASK_NOTIFICATION_WINDOW_KEY, "{}"))
-				.thenReturn(notificationWindowSettings);
+					.thenReturn(notificationWindowSettings);
 			when(mockAppDataStore.getStringBlocking(AppNotificationManager.TASK_NOTIFICATIONS_KEY, "[]"))
-				.thenReturn(notifications);
+					.thenReturn(notifications);
 
 			NotificationWorker worker = createWorker();
 
@@ -76,7 +73,7 @@ public class NotificationWorkerTest {
 			// Assert
 			assertEquals(ListenableWorker.Result.success(), result);
 			verify(notificationMgrMock.constructed().get(0), times(1))
-				.showNotificationsFromJsArray(notifications);
+					.showNotificationsFromJsArray(notifications);
 		}
 	}
 
@@ -85,18 +82,18 @@ public class NotificationWorkerTest {
 		String invalidNotificationWindowSettings = "{invalid json}";
 
 		try (MockedStatic<AppDataStore> dataMock = mockStatic(AppDataStore.class);
-		     MockedConstruction<AppNotificationManager> notificationMgrMock =
-				 mockConstruction(AppNotificationManager.class)) {
+				MockedConstruction<AppNotificationManager> notificationMgrMock = mockConstruction(
+						AppNotificationManager.class)) {
 
 			dataMock.when(() -> AppDataStore.getInstance(context))
-				.thenReturn(mockAppDataStore);
+					.thenReturn(mockAppDataStore);
 
 			when(mockAppDataStore
-				.getStringBlocking(AppNotificationManager.TASK_NOTIFICATION_WINDOW_KEY, "{}"))
-				.thenReturn(invalidNotificationWindowSettings);
+					.getStringBlocking(AppNotificationManager.TASK_NOTIFICATION_WINDOW_KEY, "{}"))
+					.thenReturn(invalidNotificationWindowSettings);
 			when(mockAppDataStore
-				.getStringBlocking(AppNotificationManager.TASK_NOTIFICATIONS_KEY, "[]"))
-				.thenReturn("[]");
+					.getStringBlocking(AppNotificationManager.TASK_NOTIFICATIONS_KEY, "[]"))
+					.thenReturn("[]");
 
 			NotificationWorker worker = createWorker();
 
@@ -107,7 +104,7 @@ public class NotificationWorkerTest {
 			// So this returns success and showNotifications is called
 			assertEquals(ListenableWorker.Result.success(), result);
 			verify(notificationMgrMock.constructed().get(0), times(1))
-				.showNotificationsFromJsArray(anyString());
+					.showNotificationsFromJsArray(anyString());
 		}
 	}
 
@@ -121,18 +118,18 @@ public class NotificationWorkerTest {
 		String notifications = "[]";
 
 		try (MockedStatic<AppDataStore> dataMock = mockStatic(AppDataStore.class);
-		     MockedConstruction<AppNotificationManager> notificationMgrMock =
-				 mockConstruction(AppNotificationManager.class)) {
+				MockedConstruction<AppNotificationManager> notificationMgrMock = mockConstruction(
+						AppNotificationManager.class)) {
 
 			dataMock.when(() -> AppDataStore.getInstance(context))
-				.thenReturn(mockAppDataStore);
+					.thenReturn(mockAppDataStore);
 
 			when(mockAppDataStore
-				.getStringBlocking(AppNotificationManager.TASK_NOTIFICATION_WINDOW_KEY, "{}"))
-				.thenReturn(notificationWindowSettings);
+					.getStringBlocking(AppNotificationManager.TASK_NOTIFICATION_WINDOW_KEY, "{}"))
+					.thenReturn(notificationWindowSettings);
 			when(mockAppDataStore
-				.getStringBlocking(AppNotificationManager.TASK_NOTIFICATIONS_KEY, "[]"))
-				.thenReturn(notifications);
+					.getStringBlocking(AppNotificationManager.TASK_NOTIFICATIONS_KEY, "[]"))
+					.thenReturn(notifications);
 
 			NotificationWorker worker = createWorker();
 
@@ -140,7 +137,7 @@ public class NotificationWorkerTest {
 
 			assertEquals(ListenableWorker.Result.success(), result);
 			verify(notificationMgrMock.constructed().get(0), times(1))
-				.showNotificationsFromJsArray(notifications);
+					.showNotificationsFromJsArray(notifications);
 		}
 	}
 
@@ -152,15 +149,15 @@ public class NotificationWorkerTest {
 		String notificationWindowSettings = getWindowSettings(startTime, endTime);
 
 		try (MockedStatic<AppDataStore> dataMock = mockStatic(AppDataStore.class);
-		     MockedConstruction<AppNotificationManager> notificationMgrMock =
-				 mockConstruction(AppNotificationManager.class)) {
+				MockedConstruction<AppNotificationManager> notificationMgrMock = mockConstruction(
+						AppNotificationManager.class)) {
 
 			dataMock.when(() -> AppDataStore.getInstance(context))
-				.thenReturn(mockAppDataStore);
+					.thenReturn(mockAppDataStore);
 
 			when(mockAppDataStore
-				.getStringBlocking(AppNotificationManager.TASK_NOTIFICATION_WINDOW_KEY, "{}"))
-				.thenReturn(notificationWindowSettings);
+					.getStringBlocking(AppNotificationManager.TASK_NOTIFICATION_WINDOW_KEY, "{}"))
+					.thenReturn(notificationWindowSettings);
 
 			NotificationWorker worker = createWorker();
 
@@ -169,23 +166,23 @@ public class NotificationWorkerTest {
 			// Assert
 			assertEquals(ListenableWorker.Result.success(), result);
 			verify(notificationMgrMock.constructed().get(0), times(0))
-				.showNotificationsFromJsArray(anyString());
+					.showNotificationsFromJsArray(anyString());
 		}
 	}
 
-	//Apps with no/invalid window settings run all the time
+	// Apps with no/invalid window settings run all the time
 	@Test
 	public void isNotificationWindow_returnsTrue_whenBadTimeFields() throws Exception {
-		String windowSettings = "{\"start\": \"09:70\",\"end\": \"19:05\"}"; //bad data
+		String windowSettings = "{\"start\": \"09:70\",\"end\": \"19:05\"}"; // bad data
 
 		try (MockedStatic<AppDataStore> dataMock = mockStatic(AppDataStore.class)) {
 
 			dataMock.when(() -> AppDataStore.getInstance(context))
-				.thenReturn(mockAppDataStore);
+					.thenReturn(mockAppDataStore);
 
 			NotificationWorker worker = createWorker();
 
-			boolean result = invokeIsNotificationWindow(worker, windowSettings);
+			boolean result = worker.isNotificationWindow(windowSettings);
 			assertTrue(result);
 		}
 	}
@@ -200,11 +197,11 @@ public class NotificationWorkerTest {
 		try (MockedStatic<AppDataStore> dataMock = mockStatic(AppDataStore.class)) {
 
 			dataMock.when(() -> AppDataStore.getInstance(context))
-				.thenReturn(mockAppDataStore);
+					.thenReturn(mockAppDataStore);
 
 			NotificationWorker worker = createWorker();
 
-			boolean result = invokeIsNotificationWindow(worker, windowSettings);
+			boolean result = worker.isNotificationWindow(windowSettings);
 			assertTrue(result);
 		}
 	}
@@ -219,11 +216,11 @@ public class NotificationWorkerTest {
 		try (MockedStatic<AppDataStore> dataMock = mockStatic(AppDataStore.class)) {
 
 			dataMock.when(() -> AppDataStore.getInstance(context))
-				.thenReturn(mockAppDataStore);
+					.thenReturn(mockAppDataStore);
 
 			NotificationWorker worker = createWorker();
 
-			boolean result = invokeIsNotificationWindow(worker, windowSettings);
+			boolean result = worker.isNotificationWindow(windowSettings);
 
 			// Assert
 			assertFalse(result);
@@ -240,51 +237,14 @@ public class NotificationWorkerTest {
 		try (MockedStatic<AppDataStore> dataMock = mockStatic(AppDataStore.class)) {
 
 			dataMock.when(() -> AppDataStore.getInstance(context))
-				.thenReturn(mockAppDataStore);
+					.thenReturn(mockAppDataStore);
 
 			NotificationWorker worker = createWorker();
 
-			boolean result = invokeIsNotificationWindow(worker, windowSettings);
+			boolean result = worker.isNotificationWindow(windowSettings);
 
 			// Assert
 			assertFalse(result);
-		}
-	}
-
-	@Test
-	public void formatTime_returnsNullForBadTime() throws Exception {
-		try (MockedStatic<AppDataStore> dataMock = mockStatic(AppDataStore.class)) {
-
-			dataMock.when(() -> AppDataStore.getInstance(context))
-				.thenReturn(mockAppDataStore);
-
-			NotificationWorker worker = createWorker();
-			LocalTime result = invokeFormatTime(worker, "14:70");
-			assertNull(result);
-		}
-	}
-
-	@Test
-	public void formatTime_parsesValidTimeFormats() throws Exception {
-		try (MockedStatic<AppDataStore> dataMock = mockStatic(AppDataStore.class)) {
-
-			dataMock.when(() -> AppDataStore.getInstance(context))
-				.thenReturn(mockAppDataStore);
-
-			NotificationWorker worker = createWorker();
-
-			String[] testTimes = {"00:00", "12:00", "23:59"};
-			LocalTime[] expectedTimes = {
-				LocalTime.of(0, 0),
-				LocalTime.of(12, 0),
-				LocalTime.of(23, 59)
-			};
-
-			//Assert
-			for (int i = 0; i < testTimes.length; i++) {
-				LocalTime result = invokeFormatTime(worker, testTimes[i]);
-				assertEquals(expectedTimes[i], result);
-			}
 		}
 	}
 
@@ -293,23 +253,9 @@ public class NotificationWorkerTest {
 		return new NotificationWorker(context, workerParameters);
 	}
 
-	private boolean invokeIsNotificationWindow(NotificationWorker worker, String windowObject) throws Exception {
-		Method method = NotificationWorker.class
-			.getDeclaredMethod("isNotificationWindow", String.class);
-		method.setAccessible(true);
-		return (Boolean) method.invoke(worker, windowObject);
-	}
-
-	private LocalTime invokeFormatTime(NotificationWorker worker, String timeString) throws Exception {
-		Method method = NotificationWorker.class
-			.getDeclaredMethod("formatTime", String.class);
-		method.setAccessible(true);
-		return (LocalTime) method.invoke(worker, timeString);
-	}
-
 	private String getWindowSettings(LocalTime startTime, LocalTime endTime) {
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
 		return String.format("{\"start\": \"%s\", \"end\": \"%s\"}",
-			startTime.format(formatter), endTime.format(formatter));
+				startTime.format(formatter), endTime.format(formatter));
 	}
 }

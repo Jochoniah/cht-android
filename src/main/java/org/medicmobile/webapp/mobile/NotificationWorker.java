@@ -14,7 +14,6 @@ import org.medicmobile.webapp.mobile.util.AppDataStore;
 
 import java.time.LocalTime;
 import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
 
 public class NotificationWorker extends Worker {
 	public static final String NOTIFICATION_WORK_REQUEST_TAG = "cht_notification_tag";
@@ -46,27 +45,17 @@ public class NotificationWorker extends Worker {
 		}
 	}
 
-	private boolean isNotificationWindow(String windowObject) throws JSONException {
+	boolean isNotificationWindow(String windowObject) throws JSONException {
 		JSONObject data = Utils.parseJSONObject(windowObject);
 		if (!data.has("start") || !data.has("end")) {
 			return true;
 		}
-		LocalTime start  = formatTime(data.getString("start"));
-		LocalTime end = formatTime(data.getString("end"));
+		LocalTime start = Utils.formatTime(data.getString("start"));
+		LocalTime end = Utils.formatTime(data.getString("end"));
 		if (start == null || end == null) {
 			return true;
 		}
 		LocalTime now = LocalTime.now(ZoneId.systemDefault());
 		return now.isAfter(start) && now.isBefore(end);
-	}
-
-	private LocalTime formatTime(String timeString){
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
-		try{
-			return LocalTime.parse(timeString, formatter);
-		} catch (Exception e) {
-			log(e, "Error parsing window time");
-			return null;
-		}
 	}
 }
