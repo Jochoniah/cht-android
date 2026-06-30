@@ -16,9 +16,12 @@ import androidx.datastore.rxjava3.RxDataStore;
 
 import io.reactivex.rxjava3.core.Single;
 
+import java.util.concurrent.TimeUnit;
+
 @OptIn(markerClass = kotlinx.coroutines.ExperimentalCoroutinesApi.class)
 public class AppDataStore {
 	private static final String DATASTORE_NAME = "cht_datastore";
+	private static final long WRITE_TIMEOUT_SECONDS = 5;
 	private static AppDataStore instance;
 	private final RxDataStore<Preferences> dataStore;
 
@@ -55,9 +58,41 @@ public class AppDataStore {
 		save(PreferencesKeys.longKey(key), value);
 	}
 
+	private <T> void saveBlocking(Key<T> prefKey, T value) {
+		try {
+			Preferences ignored = save(prefKey, value)
+				.timeout(WRITE_TIMEOUT_SECONDS, TimeUnit.SECONDS)
+				.blockingGet(); // NOSONAR
+		} catch (Exception e) {
+			log(e, "AppDataStore :: blocking save failed/timed out for key %s", prefKey);
+		}
+	}
+
 	public void saveLongBlocking(String key, Long value) {
-		Single<Preferences> updateResult = save(PreferencesKeys.longKey(key), value);
-		Preferences ignored = updateResult.blockingGet(); // NOSONAR
+		saveBlocking(PreferencesKeys.longKey(key), value);
+	}
+
+	/**
+	 * Persists the task-notifications, settings and max-count in a single atomic transaction.
+	 */
+	public void saveTaskNotificationSettingsBlocking(
+			String settingsKey, String settings,
+			String maxKey, long max,
+			String notificationsKey, String notifications) {
+		try {
+			Preferences ignored = dataStore
+				.updateDataAsync(preferences -> {
+					MutablePreferences mutablePreferences = preferences.toMutablePreferences();
+					mutablePreferences.set(PreferencesKeys.stringKey(settingsKey), settings);
+					mutablePreferences.set(PreferencesKeys.longKey(maxKey), max);
+					mutablePreferences.set(PreferencesKeys.stringKey(notificationsKey), notifications);
+					return Single.just(mutablePreferences);
+				})
+				.timeout(WRITE_TIMEOUT_SECONDS, TimeUnit.SECONDS)
+				.blockingGet(); // NOSONAR
+		} catch (Exception e) {
+			log(e, "AppDataStore :: saving task notification settings failed/timed out");
+		}
 	}
 
 	private <T> T getBlocking(Key<T> key, @Nullable T defaultValue) {
