@@ -53,12 +53,20 @@ public class NotificationWorker extends Worker {
 		}
 		LocalTime start  = formatTime(data.getString("start"));
 		LocalTime end = formatTime(data.getString("end"));
+		if (start == null || end == null) {
+			return true;
+		}
 		LocalTime now = LocalTime.now(ZoneId.systemDefault());
 		return now.isAfter(start) && now.isBefore(end);
 	}
 
 	private LocalTime formatTime(String timeString){
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
-		return LocalTime.parse(timeString, formatter);
+		try{
+			return LocalTime.parse(timeString, formatter);
+		} catch (Exception e) {
+			log(e, "Error parsing window time");
+			return null;
+		}
 	}
 }
