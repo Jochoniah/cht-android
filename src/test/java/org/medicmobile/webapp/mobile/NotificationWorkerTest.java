@@ -280,7 +280,7 @@ public class NotificationWorkerTest {
 				LocalTime.of(23, 59)
 			};
 
-			// Act & Assert
+			//Assert
 			for (int i = 0; i < testTimes.length; i++) {
 				LocalTime result = invokeFormatTime(worker, testTimes[i]);
 				assertEquals(expectedTimes[i], result);
