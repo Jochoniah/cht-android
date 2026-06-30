@@ -169,8 +169,7 @@ public class MedicAndroidJavascript {
 
 	@JavascriptInterface
 	public void updateTaskNotificationStore(String notifications, long maxNotifications) {
-		String notificationWindow = "{start:'08:00',end:'19:00'}";
-		updateTaskNotificationStore(notifications, maxNotifications, notificationWindow);
+		updateTaskNotificationStore(notifications, maxNotifications, "{}");
 	}
 
 	@JavascriptInterface

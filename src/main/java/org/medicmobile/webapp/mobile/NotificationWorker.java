@@ -48,6 +48,9 @@ public class NotificationWorker extends Worker {
 
 	private boolean isNotificationWindow(String windowObject) throws JSONException {
 		JSONObject data = Utils.parseJSONObject(windowObject);
+		if (!data.has("start") || !data.has("end")) {
+			return true;
+		}
 		LocalTime start  = formatTime(data.getString("start"));
 		LocalTime end = formatTime(data.getString("end"));
 		LocalTime now = LocalTime.now(ZoneId.systemDefault());
