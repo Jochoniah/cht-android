@@ -35,9 +35,9 @@ public class NotificationWorker extends Worker {
 			String notificationWindowSettings = appDataStore
 				.getStringBlocking(AppNotificationManager.TASK_NOTIFICATION_WINDOW_KEY, "{}");
 			if (isNotificationWindow(notificationWindowSettings)) {
-				String result = appDataStore
+				String notifications = appDataStore
 					.getStringBlocking(AppNotificationManager.TASK_NOTIFICATIONS_KEY, "[]");
-				appNotificationManager.showNotificationsFromJsArray(result);
+				appNotificationManager.showNotificationsFromJsArray(notifications);
 			}
 			return Result.success();
 		} catch (JSONException e) {
