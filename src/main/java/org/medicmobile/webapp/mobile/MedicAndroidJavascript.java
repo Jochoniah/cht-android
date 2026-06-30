@@ -167,7 +167,7 @@ public class MedicAndroidJavascript {
 		}
 	}
 
-	//CHT-Core v5.1 and v5.2 uses this
+	//CHT-Core v5.1 and v5.2 use this
 	@JavascriptInterface
 	public void updateTaskNotificationStore(String notifications, long maxNotifications) {
 		updateTaskNotificationStore(notifications, maxNotifications, "{}");
