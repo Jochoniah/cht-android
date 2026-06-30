@@ -61,7 +61,7 @@ public class NotificationWorkerTest {
 			dataMock.when(() -> AppDataStore.getInstance(context))
 					.thenReturn(mockAppDataStore);
 
-			when(mockAppDataStore.getStringBlocking(AppNotificationManager.TASK_NOTIFICATION_WINDOW_KEY, "{}"))
+			when(mockAppDataStore.getStringBlocking(AppNotificationManager.TASK_NOTIFICATION_SETTINGS_KEY, "{}"))
 					.thenReturn(notificationWindowSettings);
 			when(mockAppDataStore.getStringBlocking(AppNotificationManager.TASK_NOTIFICATIONS_KEY, "[]"))
 					.thenReturn(notifications);
@@ -89,7 +89,7 @@ public class NotificationWorkerTest {
 					.thenReturn(mockAppDataStore);
 
 			when(mockAppDataStore
-					.getStringBlocking(AppNotificationManager.TASK_NOTIFICATION_WINDOW_KEY, "{}"))
+					.getStringBlocking(AppNotificationManager.TASK_NOTIFICATION_SETTINGS_KEY, "{}"))
 					.thenReturn(invalidNotificationWindowSettings);
 			when(mockAppDataStore
 					.getStringBlocking(AppNotificationManager.TASK_NOTIFICATIONS_KEY, "[]"))
@@ -125,7 +125,7 @@ public class NotificationWorkerTest {
 					.thenReturn(mockAppDataStore);
 
 			when(mockAppDataStore
-					.getStringBlocking(AppNotificationManager.TASK_NOTIFICATION_WINDOW_KEY, "{}"))
+					.getStringBlocking(AppNotificationManager.TASK_NOTIFICATION_SETTINGS_KEY, "{}"))
 					.thenReturn(notificationWindowSettings);
 			when(mockAppDataStore
 					.getStringBlocking(AppNotificationManager.TASK_NOTIFICATIONS_KEY, "[]"))
@@ -156,7 +156,7 @@ public class NotificationWorkerTest {
 					.thenReturn(mockAppDataStore);
 
 			when(mockAppDataStore
-					.getStringBlocking(AppNotificationManager.TASK_NOTIFICATION_WINDOW_KEY, "{}"))
+					.getStringBlocking(AppNotificationManager.TASK_NOTIFICATION_SETTINGS_KEY, "{}"))
 					.thenReturn(notificationWindowSettings);
 
 			NotificationWorker worker = createWorker();

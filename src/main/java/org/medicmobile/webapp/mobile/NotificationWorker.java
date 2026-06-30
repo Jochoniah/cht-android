@@ -32,7 +32,7 @@ public class NotificationWorker extends Worker {
 		AppNotificationManager appNotificationManager = new AppNotificationManager(context);
 		try {
 			String notificationWindowSettings = appDataStore
-					.getStringBlocking(AppNotificationManager.TASK_NOTIFICATION_WINDOW_KEY, "{}");
+					.getStringBlocking(AppNotificationManager.TASK_NOTIFICATION_SETTINGS_KEY, "{}");
 			if (isNotificationWindow(notificationWindowSettings)) {
 				String notifications = appDataStore
 						.getStringBlocking(AppNotificationManager.TASK_NOTIFICATIONS_KEY, "[]");
