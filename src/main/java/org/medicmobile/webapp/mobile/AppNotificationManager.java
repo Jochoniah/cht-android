@@ -150,8 +150,9 @@ public class AppNotificationManager {
 	}
 
 	public long getStartOfDay() {
-		return LocalDate.now()
-				.atStartOfDay(ZoneId.systemDefault())
+		ZoneId zone = ZoneId.systemDefault();
+		return LocalDate.now(zone)
+				.atStartOfDay(zone)
 				.toInstant().toEpochMilli();
 	}
 
