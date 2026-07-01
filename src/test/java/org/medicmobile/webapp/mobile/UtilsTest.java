@@ -272,13 +272,13 @@ public class UtilsTest {
 	}
 
 	@Test
-	public void formatTime_returnsNullForBadTime() throws Exception {
+	public void formatTime_returnsNullForBadTime() {
 		LocalTime result = Utils.formatTime("14:70");
 		assertNull(result);
 	}
 
 	@Test
-	public void formatTime_parsesValidTimeFormats() throws Exception {
+	public void formatTime_parsesValidTimeFormats() {
 		String[] testTimes = {"00:00", "12:00", "23:59"};
 		LocalTime[] expectedTimes = {
 			LocalTime.of(0, 0),
