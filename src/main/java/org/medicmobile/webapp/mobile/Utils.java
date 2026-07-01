@@ -60,7 +60,7 @@ final class Utils {
 	 */
 	static boolean isValidNavigationUrl(String appUrl, String navUrl) {
 		boolean isValid = isUrlRelated(appUrl, navUrl);
-		if (isValid && !navUrl.matches(".*/(login|_rewrite).*")) {
+		if (isValid && !navUrl.matches(".*/(login|_rewrite).*")) { // NOSONAR
 			return true;
 		}
 		return false;

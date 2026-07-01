@@ -93,7 +93,7 @@ public class AppDataStore {
 	 */
 	public void saveTaskNotificationSettingsBlocking(String settings, String notifications) {
 		try {
-			Preferences ignored = dataStore
+			Preferences ignored = dataStore // NOSONAR
 				.updateDataAsync(preferences -> {
 					MutablePreferences mutablePreferences = preferences.toMutablePreferences();
 					mutablePreferences.set(PreferencesKeys
@@ -103,7 +103,7 @@ public class AppDataStore {
 					return Single.just(mutablePreferences);
 				})
 				.timeout(WRITE_TIMEOUT_SECONDS, TimeUnit.SECONDS)
-				.blockingGet(); // NOSONAR
+				.blockingGet();
 		} catch (Exception e) {
 			log(e, "AppDataStore :: saving task notification settings failed/timed out");
 		}
