@@ -177,10 +177,7 @@ public class MedicAndroidJavascript {
 	public void updateTaskNotificationStoreWithSettings(
 		String notifications, long maxNotifications, String settings) {
 		AppDataStore appDataStore = AppDataStore.getInstance(parent.getApplicationContext());
-		appDataStore.saveTaskNotificationSettingsBlocking(
-			AppNotificationManager.TASK_NOTIFICATION_SETTINGS_KEY, settings,
-			AppNotificationManager.MAX_NOTIFICATIONS_TO_SHOW_KEY, maxNotifications,
-			AppNotificationManager.TASK_NOTIFICATIONS_KEY, notifications);
+		appDataStore.saveTaskNotificationSettingsBlocking(settings, maxNotifications, notifications);
 	}
 
 	@android.webkit.JavascriptInterface

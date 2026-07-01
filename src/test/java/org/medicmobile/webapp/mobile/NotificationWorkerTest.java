@@ -3,6 +3,8 @@ package org.medicmobile.webapp.mobile;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.CALLS_REAL_METHODS;
 import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockConstruction;
@@ -36,6 +38,7 @@ import java.time.format.DateTimeFormatter;
 
 @RunWith(RobolectricTestRunner.class)
 public class NotificationWorkerTest {
+	private static final LocalTime FIXED_NOW = LocalTime.of(12, 0);
 
 	@Rule
 	public MockitoRule mockitoRule = MockitoJUnit.rule();
@@ -110,14 +113,11 @@ public class NotificationWorkerTest {
 
 	@Test
 	public void doWork_callsShowNotifications_whenInNotificationWindow() throws JSONException {
-		// setup
-		LocalTime now = LocalTime.now(ZoneId.systemDefault());
-		LocalTime startTime = now.minusHours(1);
-		LocalTime endTime = now.plusHours(1);
-		String notificationWindowSettings = getWindowSettings(startTime, endTime);
+		String notificationWindowSettings = getWindowSettings(FIXED_NOW.minusHours(1), FIXED_NOW.plusHours(1));
 		String notifications = "[]";
 
 		try (MockedStatic<AppDataStore> dataMock = mockStatic(AppDataStore.class);
+				MockedStatic<LocalTime> timeMock = mockNow(FIXED_NOW);
 				MockedConstruction<AppNotificationManager> notificationMgrMock = mockConstruction(
 						AppNotificationManager.class)) {
 
@@ -143,12 +143,11 @@ public class NotificationWorkerTest {
 
 	@Test
 	public void doWork_doesNotCallShowNotifications_whenOutsideNotificationWindow() throws JSONException {
-		LocalTime now = LocalTime.now(ZoneId.systemDefault());
-		LocalTime startTime = now.minusHours(2);
-		LocalTime endTime = now.minusHours(1);
-		String notificationWindowSettings = getWindowSettings(startTime, endTime);
+		// window earlier in the same day, "now" is past it
+		String notificationWindowSettings = getWindowSettings(FIXED_NOW.minusHours(2), FIXED_NOW.minusHours(1));
 
 		try (MockedStatic<AppDataStore> dataMock = mockStatic(AppDataStore.class);
+				MockedStatic<LocalTime> timeMock = mockNow(FIXED_NOW);
 				MockedConstruction<AppNotificationManager> notificationMgrMock = mockConstruction(
 						AppNotificationManager.class)) {
 
@@ -189,12 +188,10 @@ public class NotificationWorkerTest {
 
 	@Test
 	public void isNotificationWindow_returnsTrue_whenWithinWindow() throws Exception {
-		LocalTime now = LocalTime.now(ZoneId.systemDefault());
-		LocalTime startTime = now.minusHours(1);
-		LocalTime endTime = now.plusHours(1);
-		String windowSettings = getWindowSettings(startTime, endTime);
+		String windowSettings = getWindowSettings(FIXED_NOW.minusHours(1), FIXED_NOW.plusHours(1));
 
-		try (MockedStatic<AppDataStore> dataMock = mockStatic(AppDataStore.class)) {
+		try (MockedStatic<AppDataStore> dataMock = mockStatic(AppDataStore.class);
+				MockedStatic<LocalTime> timeMock = mockNow(FIXED_NOW)) {
 
 			dataMock.when(() -> AppDataStore.getInstance(context))
 					.thenReturn(mockAppDataStore);
@@ -208,12 +205,10 @@ public class NotificationWorkerTest {
 
 	@Test
 	public void isNotificationWindow_returnsFalse_whenBeforeWindow() throws Exception {
-		LocalTime now = LocalTime.now(ZoneId.systemDefault());
-		LocalTime startTime = now.plusHours(1);
-		LocalTime endTime = now.plusHours(2);
-		String windowSettings = getWindowSettings(startTime, endTime);
+		String windowSettings = getWindowSettings(FIXED_NOW.plusHours(1), FIXED_NOW.plusHours(2));
 
-		try (MockedStatic<AppDataStore> dataMock = mockStatic(AppDataStore.class)) {
+		try (MockedStatic<AppDataStore> dataMock = mockStatic(AppDataStore.class);
+				MockedStatic<LocalTime> timeMock = mockNow(FIXED_NOW)) {
 
 			dataMock.when(() -> AppDataStore.getInstance(context))
 					.thenReturn(mockAppDataStore);
@@ -229,12 +224,10 @@ public class NotificationWorkerTest {
 
 	@Test
 	public void isNotificationWindow_returnsFalse_whenAfterWindow() throws Exception {
-		LocalTime now = LocalTime.now(ZoneId.systemDefault());
-		LocalTime startTime = now.minusHours(2);
-		LocalTime endTime = now.minusHours(1);
-		String windowSettings = getWindowSettings(startTime, endTime);
+		String windowSettings = getWindowSettings(FIXED_NOW.minusHours(2), FIXED_NOW.minusHours(1));
 
-		try (MockedStatic<AppDataStore> dataMock = mockStatic(AppDataStore.class)) {
+		try (MockedStatic<AppDataStore> dataMock = mockStatic(AppDataStore.class);
+				MockedStatic<LocalTime> timeMock = mockNow(FIXED_NOW)) {
 
 			dataMock.when(() -> AppDataStore.getInstance(context))
 					.thenReturn(mockAppDataStore);
@@ -257,5 +250,12 @@ public class NotificationWorkerTest {
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
 		return String.format("{\"start\": \"%s\", \"end\": \"%s\"}",
 				startTime.format(formatter), endTime.format(formatter));
+	}
+
+	// Pins LocalTime.now(...) to passed arg
+	private MockedStatic<LocalTime> mockNow(LocalTime now) {
+		MockedStatic<LocalTime> timeMock = mockStatic(LocalTime.class, CALLS_REAL_METHODS);
+		timeMock.when(() -> LocalTime.now(any(ZoneId.class))).thenReturn(now);
+		return timeMock;
 	}
 }

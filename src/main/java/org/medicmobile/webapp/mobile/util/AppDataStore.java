@@ -14,9 +14,11 @@ import androidx.datastore.preferences.core.PreferencesKeys;
 import androidx.datastore.preferences.rxjava3.RxPreferenceDataStoreBuilder;
 import androidx.datastore.rxjava3.RxDataStore;
 
-import io.reactivex.rxjava3.core.Single;
+import org.medicmobile.webapp.mobile.AppNotificationManager;
 
 import java.util.concurrent.TimeUnit;
+
+import io.reactivex.rxjava3.core.Single;
 
 @OptIn(markerClass = kotlinx.coroutines.ExperimentalCoroutinesApi.class)
 public class AppDataStore {
@@ -58,41 +60,9 @@ public class AppDataStore {
 		save(PreferencesKeys.longKey(key), value);
 	}
 
-	private <T> void saveBlocking(Key<T> prefKey, T value) {
-		try {
-			Preferences ignored = save(prefKey, value)
-				.timeout(WRITE_TIMEOUT_SECONDS, TimeUnit.SECONDS)
-				.blockingGet(); // NOSONAR
-		} catch (Exception e) {
-			log(e, "AppDataStore :: blocking save failed/timed out for key %s", prefKey);
-		}
-	}
-
 	public void saveLongBlocking(String key, Long value) {
-		saveBlocking(PreferencesKeys.longKey(key), value);
-	}
-
-	/**
-	 * Persists the task-notifications, settings and max-count in a single atomic transaction.
-	 */
-	public void saveTaskNotificationSettingsBlocking(
-			String settingsKey, String settings,
-			String maxKey, long max,
-			String notificationsKey, String notifications) {
-		try {
-			Preferences ignored = dataStore
-				.updateDataAsync(preferences -> {
-					MutablePreferences mutablePreferences = preferences.toMutablePreferences();
-					mutablePreferences.set(PreferencesKeys.stringKey(settingsKey), settings);
-					mutablePreferences.set(PreferencesKeys.longKey(maxKey), max);
-					mutablePreferences.set(PreferencesKeys.stringKey(notificationsKey), notifications);
-					return Single.just(mutablePreferences);
-				})
-				.timeout(WRITE_TIMEOUT_SECONDS, TimeUnit.SECONDS)
-				.blockingGet(); // NOSONAR
-		} catch (Exception e) {
-			log(e, "AppDataStore :: saving task notification settings failed/timed out");
-		}
+		Single<Preferences> updateResult = save(PreferencesKeys.longKey(key), value);
+		Preferences ignored = updateResult.blockingGet(); // NOSONAR
 	}
 
 	private <T> T getBlocking(Key<T> key, @Nullable T defaultValue) {
@@ -111,5 +81,31 @@ public class AppDataStore {
 
 	public long getLongBlocking(String key, @Nullable Long defaultValue) {
 		return getBlocking(PreferencesKeys.longKey(key), defaultValue);
+	}
+
+	/**
+	 * Persists the task-notifications, settings and max-count in a single atomic transaction.
+	 */
+	public void saveTaskNotificationSettingsBlocking(
+		String settings,
+		long max,
+		String notifications) {
+		try {
+			Preferences ignored = dataStore
+				.updateDataAsync(preferences -> {
+					MutablePreferences mutablePreferences = preferences.toMutablePreferences();
+					mutablePreferences.set(PreferencesKeys
+						.stringKey(AppNotificationManager.TASK_NOTIFICATION_SETTINGS_KEY), settings);
+					mutablePreferences.set(PreferencesKeys
+						.longKey(AppNotificationManager.MAX_NOTIFICATIONS_TO_SHOW_KEY), max);
+					mutablePreferences.set(PreferencesKeys
+						.stringKey(AppNotificationManager.TASK_NOTIFICATIONS_KEY), notifications);
+					return Single.just(mutablePreferences);
+				})
+				.timeout(WRITE_TIMEOUT_SECONDS, TimeUnit.SECONDS)
+				.blockingGet(); // NOSONAR
+		} catch (Exception e) {
+			log(e, "AppDataStore :: saving task notification settings failed/timed out");
+		}
 	}
 }
