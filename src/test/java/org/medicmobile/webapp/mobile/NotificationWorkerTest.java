@@ -181,7 +181,7 @@ public class NotificationWorkerTest {
 
 			NotificationWorker worker = createWorker();
 
-			boolean result = worker.isNotificationWindow(windowSettings);
+			boolean result = worker.isNotificationWindow(Utils.parseJSONObject(windowSettings));
 			assertFalse(result);
 		}
 	}
@@ -198,7 +198,7 @@ public class NotificationWorkerTest {
 
 			NotificationWorker worker = createWorker();
 
-			boolean result = worker.isNotificationWindow(windowSettings);
+			boolean result = worker.isNotificationWindow(Utils.parseJSONObject(windowSettings));
 			assertTrue(result);
 		}
 	}
@@ -215,7 +215,7 @@ public class NotificationWorkerTest {
 
 			NotificationWorker worker = createWorker();
 
-			boolean result = worker.isNotificationWindow(windowSettings);
+			boolean result = worker.isNotificationWindow(Utils.parseJSONObject(windowSettings));
 
 			// Assert
 			assertFalse(result);
@@ -234,7 +234,7 @@ public class NotificationWorkerTest {
 
 			NotificationWorker worker = createWorker();
 
-			boolean result = worker.isNotificationWindow(windowSettings);
+			boolean result = worker.isNotificationWindow(Utils.parseJSONObject(windowSettings));
 
 			// Assert
 			assertFalse(result);

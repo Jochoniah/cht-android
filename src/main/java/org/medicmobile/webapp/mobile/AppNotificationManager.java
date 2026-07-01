@@ -38,7 +38,6 @@ public class AppNotificationManager {
 	public static final String TASK_NOTIFICATION_SETTINGS_KEY = "task_notification_settings";
 	public static final String TASK_NOTIFICATION_DAY_KEY = "cht_task_notification_day";
 	public static final String LATEST_NOTIFICATION_TIMESTAMP_KEY = "cht_task_notification_timestamp";
-	public static final String MAX_NOTIFICATIONS_TO_SHOW_KEY = "cht_max_task_notifications";
 
 	private final Context context;
 	private final NotificationManager manager;
@@ -115,7 +114,7 @@ public class AppNotificationManager {
 	private void showMultipleTaskNotifications(JSONArray dataArray) throws JSONException {
 		Intent intent = new Intent(context, EmbeddedBrowserActivity.class);
 		intent.setData(Uri.parse(TextUtils.concat(appUrl, "/#/tasks").toString()));
-		long maxNotifications = appDataStore.getLongBlocking(MAX_NOTIFICATIONS_TO_SHOW_KEY, 8L);
+		long maxNotifications = getSettings(appDataStore).getLong("maxNotifications");
 		long latestStoredTimestamp = getLatestStoredTimestamp(getStartOfDay());
 		int counter = 0;
 		long latestReadyAt = 0;
@@ -147,6 +146,11 @@ public class AppNotificationManager {
 
 	public void saveLatestNotificationTimestamp(long value) {
 		appDataStore.saveLong(LATEST_NOTIFICATION_TIMESTAMP_KEY, value);
+	}
+
+	public static JSONObject getSettings(AppDataStore dataStore){
+		String settings = dataStore.getStringBlocking(TASK_NOTIFICATION_SETTINGS_KEY, "{}");
+		return Utils.parseJSONObject(settings);
 	}
 
 	public long getStartOfDay() {

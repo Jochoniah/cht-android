@@ -31,8 +31,7 @@ public class NotificationWorker extends Worker {
 		AppDataStore appDataStore = AppDataStore.getInstance(context);
 		AppNotificationManager appNotificationManager = new AppNotificationManager(context);
 		try {
-			String notificationWindowSettings = appDataStore
-					.getStringBlocking(AppNotificationManager.TASK_NOTIFICATION_SETTINGS_KEY, "{}");
+			JSONObject notificationWindowSettings = AppNotificationManager.getSettings(appDataStore);
 			if (isNotificationWindow(notificationWindowSettings)) {
 				String notifications = appDataStore
 						.getStringBlocking(AppNotificationManager.TASK_NOTIFICATIONS_KEY, "[]");
@@ -45,13 +44,12 @@ public class NotificationWorker extends Worker {
 		}
 	}
 
-	boolean isNotificationWindow(String windowObject) throws JSONException {
-		JSONObject data = Utils.parseJSONObject(windowObject);
-		if (!data.has("start") || !data.has("end")) {
+	boolean isNotificationWindow(JSONObject settings) throws JSONException {
+		if (!settings.has("start") || !settings.has("end")) {
 			return true;
 		}
-		LocalTime start = Utils.formatTime(data.getString("start"));
-		LocalTime end = Utils.formatTime(data.getString("end"));
+		LocalTime start = Utils.formatTime(settings.getString("start"));
+		LocalTime end = Utils.formatTime(settings.getString("end"));
 		if (start == null || end == null) {
 			return false;
 		}

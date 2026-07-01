@@ -65,6 +65,11 @@ public class AppDataStore {
 		Preferences ignored = updateResult.blockingGet(); // NOSONAR
 	}
 
+	public void saveStringBlocking(String key, String value) {
+		Single<Preferences> updateResult = save(PreferencesKeys.stringKey(key), value);
+		Preferences ignored = updateResult.blockingGet(); // NOSONAR
+	}
+
 	private <T> T getBlocking(Key<T> key, @Nullable T defaultValue) {
 		return dataStore
 			.data()
@@ -86,18 +91,13 @@ public class AppDataStore {
 	/**
 	 * Persists the task-notifications, settings and max-count in a single atomic transaction.
 	 */
-	public void saveTaskNotificationSettingsBlocking(
-		String settings,
-		long max,
-		String notifications) {
+	public void saveTaskNotificationSettingsBlocking(String settings, String notifications) {
 		try {
 			Preferences ignored = dataStore
 				.updateDataAsync(preferences -> {
 					MutablePreferences mutablePreferences = preferences.toMutablePreferences();
 					mutablePreferences.set(PreferencesKeys
 						.stringKey(AppNotificationManager.TASK_NOTIFICATION_SETTINGS_KEY), settings);
-					mutablePreferences.set(PreferencesKeys
-						.longKey(AppNotificationManager.MAX_NOTIFICATIONS_TO_SHOW_KEY), max);
 					mutablePreferences.set(PreferencesKeys
 						.stringKey(AppNotificationManager.TASK_NOTIFICATIONS_KEY), notifications);
 					return Single.just(mutablePreferences);
