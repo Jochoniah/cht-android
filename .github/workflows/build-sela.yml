@@ -1,0 +1,35 @@
+name: Build SELA APK (debug)
+
+# Manually-triggered build of the SELA branded flavor as an installable DEBUG APK.
+# Debug APKs are signed with Android's debug key, so they install on test phones WITHOUT a release
+# keystore or signing secrets - ideal for field/UAT testing. For a signed Play-ready build, add the
+# `sela` flavor to publish.yml with a keystore instead (see docs/ANDROID_TESTING.md in the SELA repo).
+#
+# Run it: Actions tab -> "Build SELA APK (debug)" -> Run workflow -> download the "sela-debug-apk" artifact.
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build-sela:
+    name: Assemble SELA debug APK
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Assemble SELA (debug - installable, no keystore needed)
+        run: ./gradlew assembleSelaDebug
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: sela-debug-apk
+          path: build/outputs/apk/sela/debug/*.apk
+          if-no-files-found: error

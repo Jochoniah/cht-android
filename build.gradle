@@ -465,6 +465,11 @@ android {
       applicationId = 'org.medicmobile.webapp.mobile.lumbini'
     }
 
+    sela {
+      dimension = 'brand'
+      applicationId = 'org.medicmobile.webapp.mobile.sela'
+    }
+
   }
 
   splits {
