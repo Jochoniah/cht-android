@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 	<string name="app_name">SELA</string>
-	<string name="app_host">chtdemo.shares.zrok.io</string>
+	<string name="app_host">sela-amref.shares.zrok.io</string>
 </resources>
