@@ -25,7 +25,10 @@ jobs:
           java-version: '17'
 
       - name: Assemble SELA (debug - installable, no keystore needed)
-        run: ./gradlew assembleSelaDebug
+        # -Pabi turns off the per-ABI split (build.gradle: enable !project.hasProperty('abi')), giving ONE
+        # APK with both armeabi-v7a and arm64-v8a: it installs on 32-bit Go-edition phones (e.g. Neon Ray
+        # Ultra) and on 64-bit-only phones alike, so the field team shares a single file.
+        run: ./gradlew assembleSelaDebug -Pabi=universal
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
